@@ -3,9 +3,6 @@ name: Process Device JSONs and Send Report to Feishu
 on:
   schedule:
     - cron: '* * * * *'  # Runs every minute for debugging
-  push:
-    paths:
-      - 'data/*.json'  # Trigger on changes to JSON files in data/ folder
   workflow_dispatch:  # Allow manual trigger for debugging
 
 jobs:
