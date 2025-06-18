@@ -49,7 +49,6 @@ def generate_report(data):
     return "\n".join(report_lines)
 
 def send_to_feishu(report, webhook_url):
-    """Send the report to the Feishu group via webhook."""
     headers = {'Content-Type': 'application/json'}
     payload = {
         "msg_type": "text",
@@ -59,6 +58,8 @@ def send_to_feishu(report, webhook_url):
     }
     try:
         response = requests.post(webhook_url, headers=headers, json=payload)
+        print(f"Response Status: {response.status_code}")
+        print(f"Response Text: {response.text}")  # 添加详细输出
         if response.status_code == 200:
             print("Report sent to Feishu successfully.")
         else:
