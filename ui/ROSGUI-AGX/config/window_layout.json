@@ -1,0 +1,252 @@
+{
+  "auto_save": true,
+  "default_layout": "标准布局",
+  "layouts": {
+    "Data Collection": {
+      "created_time": 1750130834,
+      "description": "All windows in tabs for small screens",
+      "source": "user",
+      "version": "1.0",
+      "windows": {
+        "CameraWindow": {
+          "position": "saved",
+          "size": [
+            400,
+            300
+          ],
+          "visible": true,
+          "window_open": true
+        },
+        "DataWindow": {
+          "position": "saved",
+          "size": [
+            400,
+            300
+          ],
+          "visible": true,
+          "window_open": true
+        },
+        "LifterWindow": {
+          "position": "saved",
+          "size": [
+            400,
+            300
+          ],
+          "visible": false,
+          "window_open": false
+        },
+        "ModelWindow": {
+          "position": "saved",
+          "size": [
+            400,
+            300
+          ],
+          "visible": false,
+          "window_open": false
+        },
+        "SystemWindow": {
+          "position": "saved",
+          "size": [
+            400,
+            300
+          ],
+          "visible": true,
+          "window_open": true
+        },
+        "VisualizationWindow": {
+          "position": "saved",
+          "size": [
+            400,
+            300
+          ],
+          "visible": false,
+          "window_open": false
+        }
+      }
+    },
+    "Data Replay": {
+      "description": "Three-column layout for development work",
+      "windows": {
+        "CameraWindow": {
+          "position": "left",
+          "size": [
+            300,
+            400
+          ],
+          "visible": true
+        },
+        "DataWindow": {
+          "position": "center",
+          "size": [
+            500,
+            600
+          ],
+          "visible": true
+        },
+        "LifterWindow": {
+          "position": "right",
+          "size": [
+            300,
+            400
+          ],
+          "visible": true
+        },
+        "ModelWindow": {
+          "position": "center",
+          "size": [
+            500,
+            550
+          ],
+          "visible": true
+        },
+        "SystemWindow": {
+          "position": "left",
+          "size": [
+            300,
+            600
+          ],
+          "visible": true
+        }
+      }
+    },
+    "Lifter Control": {
+      "description": "Layout focused on robot control",
+      "windows": {
+        "CameraWindow": {
+          "position": "main",
+          "size": [
+            600,
+            500
+          ],
+          "visible": true
+        },
+        "DataWindow": {
+          "position": "side",
+          "size": [
+            350,
+            400
+          ],
+          "visible": false
+        },
+        "LifterWindow": {
+          "position": "main",
+          "size": [
+            600,
+            400
+          ],
+          "visible": true
+        },
+        "ModelWindow": {
+          "position": "side",
+          "size": [
+            350,
+            400
+          ],
+          "visible": false
+        },
+        "SystemWindow": {
+          "position": "side",
+          "size": [
+            350,
+            400
+          ],
+          "visible": true
+        }
+      }
+    },
+    "Model Training": {
+      "description": "Layout focused on data collection and training",
+      "windows": {
+        "CameraWindow": {
+          "position": "side",
+          "size": [
+            300,
+            300
+          ],
+          "visible": false
+        },
+        "DataWindow": {
+          "position": "main",
+          "size": [
+            700,
+            700
+          ],
+          "visible": true
+        },
+        "LifterWindow": {
+          "position": "side",
+          "size": [
+            300,
+            300
+          ],
+          "visible": false
+        },
+        "ModelWindow": {
+          "position": "main",
+          "size": [
+            700,
+            700
+          ],
+          "visible": true
+        },
+        "SystemWindow": {
+          "position": "side",
+          "size": [
+            300,
+            400
+          ],
+          "visible": true
+        }
+      }
+    },
+    "标准布局": {
+      "description": "Default layout with system controls on left, data/model in center",
+      "windows": {
+        "CameraWindow": {
+          "position": "bottom_left",
+          "size": [
+            350,
+            300
+          ],
+          "visible": true
+        },
+        "DataWindow": {
+          "position": "center",
+          "size": [
+            500,
+            600
+          ],
+          "visible": true
+        },
+        "LifterWindow": {
+          "position": "right",
+          "size": [
+            350,
+            400
+          ],
+          "visible": true
+        },
+        "ModelWindow": {
+          "position": "center",
+          "size": [
+            500,
+            550
+          ],
+          "visible": true
+        },
+        "SystemWindow": {
+          "position": "left",
+          "size": [
+            350,
+            400
+          ],
+          "visible": true
+        }
+      }
+    }
+  },
+  "restore_on_startup": true,
+  "settings": {
+    "last_used_layout": "Data Collection"
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "script_name": "replay_data.py",
+  "description": "Data replay script for collected episodes with ROS topic publishing",
+  "parameters": [
+    {
+      "name": "dataset_dir",
+      "type": "directory",
+      "default": "~/data",
+      "description": "Dataset directory path",
+      "required": true,
+      "advanced": false,
+      "placeholder": "Enter dataset directory path"
+    },
+    {
+      "name": "task_name",
+      "type": "string",
+      "default": "aloha_mobile_dummy",
+      "description": "Task name for the dataset",
+      "required": false,
+      "advanced": false,
+      "placeholder": "Enter task name"
+    },
+    {
+      "name": "episode_idx",
+      "type": "integer",
+      "default": 0,
+      "description": "Episode index to replay",
+      "required": false,
+      "advanced": false,
+      "min": 0,
+      "max": 500
+    },
+    {
+      "name": "camera_names",
+      "type": "string",
+      "default": "cam_high,cam_left_wrist,cam_right_wrist",
+      "description": "Camera names (comma-separated)",
+      "required": false,
+      "advanced": true,
+      "placeholder": "cam1,cam2,cam3"
+    },
+    {
+      "name": "frame_rate",
+      "type": "integer",
+      "default": 30,
+      "description": "Replay frame rate (Hz)",
+      "required": false,
+      "advanced": false,
+      "min": 1,
+      "max": 60
+    },
+    {
+      "name": "only_pub_master",
+      "type": "store_true",
+      "default": false,
+      "description": "Only publish master arm commands (for demonstration mode)",
+      "required": false,
+      "advanced": false
+    },
+    {
+      "name": "img_front_topic",
+      "type": "string",
+      "default": "/camera_f/color/image_raw",
+      "description": "Front camera image topic",
+      "required": false,
+      "advanced": true,
+      "placeholder": "/camera_topic"
+    },
+    {
+      "name": "img_left_topic",
+      "type": "string",
+      "default": "/camera_l/color/image_raw",
+      "description": "Left camera image topic",
+      "required": false,
+      "advanced": true,
+      "placeholder": "/camera_topic"
+    },
+    {
+      "name": "img_right_topic",
+      "type": "string",
+      "default": "/camera_r/color/image_raw",
+      "description": "Right camera image topic",
+      "required": false,
+      "advanced": true,
+      "placeholder": "/camera_topic"
+    },
+    {
+      "name": "master_arm_left_topic",
+      "type": "string",
+      "default": "/master/joint_left",
+      "description": "Master left arm joint topic",
+      "required": false,
+      "advanced": true,
+      "placeholder": "/joint_topic"
+    },
+    {
+      "name": "master_arm_right_topic",
+      "type": "string",
+      "default": "/master/joint_right",
+      "description": "Master right arm joint topic",
+      "required": false,
+      "advanced": true,
+      "placeholder": "/joint_topic"
+    },
+    {
+      "name": "puppet_arm_left_topic",
+      "type": "string",
+      "default": "/puppet/joint_left",
+      "description": "Puppet left arm joint topic",
+      "required": false,
+      "advanced": true,
+      "placeholder": "/joint_topic"
+    },
+    {
+      "name": "puppet_arm_right_topic",
+      "type": "string",
+      "default": "/puppet/joint_right",
+      "description": "Puppet right arm joint topic",
+      "required": false,
+      "advanced": true,
+      "placeholder": "/joint_topic"
+    },
+    {
+      "name": "robot_base_topic",
+      "type": "string",
+      "default": "/cmd_vel",
+      "description": "Robot base velocity command topic",
+      "required": false,
+      "advanced": true,
+      "placeholder": "/cmd_vel"
+    },
+    {
+      "name": "use_robot_base",
+      "type": "flag",
+      "default": false,
+      "description": "Enable robot base control",
+      "required": false,
+      "advanced": true
+    }
+  ]
+} 

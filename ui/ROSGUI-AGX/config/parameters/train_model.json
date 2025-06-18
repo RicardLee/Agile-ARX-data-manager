@@ -1,0 +1,176 @@
+{
+  "script_name": "train.py",
+  "description": "ACT model training script with comprehensive parameter support",
+  "parameters": [
+    {
+      "name": "dataset_dir",
+      "type": "directory",
+      "default": "./dataset",
+      "description": "Dataset directory containing episodes",
+      "required": true,
+      "advanced": false,
+      "placeholder": "Path to dataset directory"
+    },
+    {
+      "name": "ckpt_dir",
+      "type": "directory",
+      "default": "train",
+      "description": "Checkpoint directory for saving models",
+      "required": true,
+      "advanced": false,
+      "placeholder": "Path to checkpoint directory"
+    },
+    {
+      "name": "num_episodes",
+      "type": "integer",
+      "default": 50,
+      "description": "Number of episodes to use for training",
+      "required": true,
+      "advanced": false,
+      "min": 1,
+      "max": 10000
+    },
+    {
+      "name": "batch_size",
+      "type": "integer",
+      "default": 32,
+      "description": "Training batch size",
+      "required": false,
+      "advanced": false,
+      "min": 1,
+      "max": 256
+    },
+    {
+      "name": "num_epochs",
+      "type": "integer",
+      "default": 3000,
+      "description": "Number of training epochs",
+      "required": false,
+      "advanced": false,
+      "min": 1,
+      "max": 10000
+    },
+    {
+      "name": "lr",
+      "type": "float",
+      "default": 4e-5,
+      "description": "Learning rate",
+      "required": false,
+      "advanced": false,
+      "min": 1e-6,
+      "max": 1e-2
+    },
+    {
+      "name": "policy_class",
+      "type": "choice",
+      "default": "ACT",
+      "description": "Policy class to use",
+      "required": false,
+      "advanced": true,
+      "choices": ["ACT", "CNNMLP", "Diffusion"]
+    },
+    {
+      "name": "seed",
+      "type": "integer",
+      "default": 0,
+      "description": "Random seed for reproducibility",
+      "required": false,
+      "advanced": true,
+      "min": 0,
+      "max": 999999
+    },
+    {
+      "name": "weight_decay",
+      "type": "float",
+      "default": 1e-4,
+      "description": "Weight decay for regularization",
+      "required": false,
+      "advanced": true,
+      "min": 0,
+      "max": 1e-2
+    },
+    {
+      "name": "backbone",
+      "type": "choice",
+      "default": "resnet18",
+      "description": "Backbone network architecture",
+      "required": false,
+      "advanced": true,
+      "choices": ["resnet18", "resnet34", "resnet50"]
+    },
+    {
+      "name": "hidden_dim",
+      "type": "integer",
+      "default": 512,
+      "description": "Hidden dimension size",
+      "required": false,
+      "advanced": true,
+      "min": 64,
+      "max": 2048
+    },
+    {
+      "name": "enc_layers",
+      "type": "integer",
+      "default": 4,
+      "description": "Number of encoder layers",
+      "required": false,
+      "advanced": true,
+      "min": 1,
+      "max": 12
+    },
+    {
+      "name": "dec_layers",
+      "type": "integer",
+      "default": 7,
+      "description": "Number of decoder layers",
+      "required": false,
+      "advanced": true,
+      "min": 1,
+      "max": 12
+    },
+    {
+      "name": "nheads",
+      "type": "integer",
+      "default": 8,
+      "description": "Number of attention heads",
+      "required": false,
+      "advanced": true,
+      "min": 1,
+      "max": 16
+    },
+    {
+      "name": "chunk_size",
+      "type": "integer",
+      "default": 32,
+      "description": "Action chunk size",
+      "required": false,
+      "advanced": true,
+      "min": 1,
+      "max": 100
+    },
+    {
+      "name": "use_robot_base",
+      "type": "flag",
+      "default": false,
+      "description": "Enable robot base control",
+      "required": false,
+      "advanced": true
+    },
+    {
+      "name": "use_depth_image",
+      "type": "flag",
+      "default": false,
+      "description": "Use depth images for training",
+      "required": false,
+      "advanced": true
+    },
+    {
+      "name": "temporal_agg",
+      "type": "flag",
+      "default": true,
+      "description": "Enable temporal action aggregation",
+      "required": false,
+      "advanced": true
+    }
+  ]
+}
