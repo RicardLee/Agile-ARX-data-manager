@@ -18,35 +18,7 @@ def read_json_files(folder_path):
     return data
 
 def generate_report(data):
-    """Generate a report from the JSON data."""
-    if not data:
-        return "No data available for the report."
-
-    total_runtime = 0
-    device_count = len(data)
-    statuses = []
-    report_lines = [f"# Device Runtime Report - {datetime.now().strftime('%Y-%m-%d')}\n"]
-
-    for entry in data:
-        device_id = entry.get('device_id', 'Unknown')
-        runtime = entry.get('runtime_hours', 0)
-        status = entry.get('status', 'Unknown')
-        date = entry.get('date', 'Unknown')
-
-        total_runtime += runtime
-        statuses.append(status)
-        report_lines.append(f"- **Device ID**: {device_id}, **Date**: {date}, **Runtime**: {runtime} hours, **Status**: {status}")
-
-    avg_runtime = total_runtime / device_count if device_count > 0 else 0
-    operational_count = sum(1 for s in statuses if s.lower() == 'operational')
-    
-    report_lines.append("\n## Summary")
-    report_lines.append(f"- **Total Devices**: {device_count}")
-    report_lines.append(f"- **Total Runtime**: {total_runtime:.2f} hours")
-    report_lines.append(f"- **Average Runtime per Device**: {avg_runtime:.2f} hours")
-    report_lines.append(f"- **Operational Devices**: {operational_count}/{device_count}")
-
-    return "\n".join(report_lines)
+    return "Test message from GitHub Actions"
 
 def send_to_feishu(report, webhook_url):
     headers = {'Content-Type': 'application/json'}
