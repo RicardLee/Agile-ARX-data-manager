@@ -8,4 +8,4 @@ SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 
 cd "$SCRIPT_DIR" 
 
-./ui/ROSGUI-AGX/bin/ROSGUIAGX
+./ui/ROSGUI-AGX/build/bin/ROSGUIAGX

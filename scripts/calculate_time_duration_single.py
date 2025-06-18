@@ -5,7 +5,6 @@ from moviepy.editor import VideoFileClip
 from statistics import mean, median
 import sys
 import json
-import socket
 
 def get_video_duration(video_path):
     """Get the duration of a video file in seconds."""
@@ -16,7 +15,12 @@ def get_video_duration(video_path):
         print(f"Error reading video {video_path}: {e}")
         return 0  # Return 0 if video can't be read
 
-def calculate_task_times_with_stats(folder_path):
+def calculate_daily_task_times(folder_path):
+    # Get today's date (at midnight)
+    today = datetime.now().date()
+    today_start = datetime.combine(today, datetime.min.time())
+    today_end = datetime.combine(today, datetime.max.time())
+    
     # Dictionary to store task data: {task_name: [(folder, start_time, end_time, duration)]}
     task_data = defaultdict(list)
     
@@ -25,8 +29,6 @@ def calculate_task_times_with_stats(folder_path):
         # Check if the current folder is a 7-digit task folder
         folder_name = os.path.basename(root)
         if folder_name.isdigit() and len(folder_name) == 7:
-            # Get the parent folder as the task name
-            task_name = os.path.basename(os.path.dirname(root))
             # Get folder creation time
             stat = os.stat(root)
             try:
@@ -37,6 +39,13 @@ def calculate_task_times_with_stats(folder_path):
                 created_time = stat.st_mtime
             
             start_time = datetime.fromtimestamp(created_time)
+            
+            # Skip if not today's data
+            if not (today_start <= start_time <= today_end):
+                continue
+            
+            # Get the parent folder as the task name
+            task_name = os.path.basename(os.path.dirname(root))
             
             # Path to the demo.mp4 video
             video_path = os.path.join(root, "observation", "cam_left_wrist", "color_image", "demo.mp4")
@@ -105,32 +114,26 @@ def calculate_task_times_with_stats(folder_path):
     
     return results
 
-def get_ip_last_digit():
-    """Get the last digit of the last part of the IP address"""
-    try:
-        # Create a socket connection to a dummy address to get the local IP
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(("8.8.8.8", 80))  # Google's public DNS server
-        ip_address = s.getsockname()[0]
-        s.close()
-        # Get last part of IP and then last character
-        return ip_address.split('.')[-1][-1]
-    except Exception:
-        return "0"  # Default to 0 if IP can't be determined
-
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: python calculate_task_times_with_stats.py <folder_path>")
+    if len(sys.argv) < 3:
+        print("Usage: python calculate_daily_task_times.py <folder_path> <device_id> <model>")
         sys.exit(1)
     
     folder_path = sys.argv[1]
+    device_id = sys.argv[2]
+    model = sys.argv[3]
+    save_path = os.path.join('data_statistics', model)
+
     if not os.path.isdir(folder_path):
         print(f"Error: {folder_path} is not a valid directory")
         sys.exit(1)
     
-    results = calculate_task_times_with_stats(folder_path)
+    # Create save directory if it doesn't exist
+    os.makedirs(save_path, exist_ok=True)
     
-    print("Task Timing and Statistics:")
+    results = calculate_daily_task_times(folder_path)
+    
+    print("Daily Task Timing and Statistics:")
     print("=" * 50)
     for task_name, data in results.items():
         print(f"\nTask: {task_name}")
@@ -157,19 +160,17 @@ if __name__ == "__main__":
         
         print("-" * 50)
     
-    print("\nSummary:")
+    print("\nDaily Summary:")
     print("=" * 50)
     total_tasks = sum(len(data['entries']) for data in results.values())
-    print(f"Total tasks processed: {total_tasks}")
-    print(f"Total task types: {len(results)}")
+    print(f"Today's date: {datetime.now().strftime('%Y-%m-%d')}")
+    print(f"Total tasks processed today: {total_tasks}")
+    print(f"Total task types today: {len(results)}")
 
-    # Get current date in YYYYMMDD format and last digit of IP
-    current_date = datetime.now().strftime("%Y%m%d")
-    ip_last_digit = get_ip_last_digit()
-    
     # Save results to JSON file
-    output_filename = f"result_{current_date}_device_{ip_last_digit}.json"
-    with open(output_filename, 'w') as f:
+    output_filename = f"daily_result_{datetime.now().strftime('%Y%m%d')}{model}{device_id}.json"
+    output_path = os.path.join(save_path, output_filename)
+    with open(output_path, 'w') as f:
         json.dump(results, f, indent=2)
     
-    print(f"\nResults saved to: {output_filename}")
+    print(f"\nResults saved to: {output_path}")
