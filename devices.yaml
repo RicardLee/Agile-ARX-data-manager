@@ -1,5 +1,0 @@
-# 设备配置文件
-devices:
-  - id: 1
-    model: Agile
-    ip: 192.3.9.11
