@@ -26,4 +26,4 @@ jobs:
         env:
           FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
         run: |
-          python scripts/generate_report.py "$FEISHU_WEBHOOK_URL"
+          python generate_report.py "$FEISHU_WEBHOOK_URL"
