@@ -6,6 +6,6 @@ fi
 
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 
-cd "$SCRIPT_DIR" 
+cd "$SCRIPT_DIR/ui/ROSGUI-AGX" 
 
-./ui/ROSGUI-AGX/build/bin/ROSGUIAGX
+./build/bin/ROSGUIAGX
