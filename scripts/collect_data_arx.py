@@ -156,6 +156,7 @@ def collect_information(args, ros_operator, voice_engine):
     gripper_close = 3.0
     prev_qpos = None
     record_started = False
+    save_flag = True
 
     while not rospy.is_shutdown():
         key = cv2.waitKey(1) & 0xFF
@@ -223,12 +224,17 @@ def collect_information(args, ros_operator, voice_engine):
         if rospy.is_shutdown():
             exit(-1)
 
+        if args.min_timesteps < count < args.max_timesteps:
+            print(f"Recorded {count} frames. Reference frame: {args.min_timesteps} to {args.max_timesteps}.")
+            save_flag = False
+            break
+        
         rate.sleep()
 
     print(f"\nlen(timesteps): {len(timesteps)}")
     print(f"len(actions)  : {len(actions)}")
 
-    return timesteps, actions, actions_eef, action_bases, key_input
+    return timesteps, actions, actions_eef, action_bases, key_input, save_flag
 
 
 # 保存数据函数
@@ -492,25 +498,27 @@ def main(args):
         collect_detect(current_episode, voice_engine, ros_operator)
 
         print(f"Start to record episode {current_episode}")
-        timesteps, actions, actions_eef, action_bases, key_input = collect_information(args, ros_operator,
-                                                                            voice_engine)  # ros_operator.process()
+        timesteps, actions, actions_eef, action_bases, key_input, save_flag = collect_information(args, ros_operator, voice_engine)  # ros_operator.process()
 
         if not os.path.exists(datasets_dir):
             os.makedirs(datasets_dir)
 
-        if key_input == 'q':
+        if save_flag is True:
+            if key_input == 'q':
+                print("\033[31m[INFO] Episode discarded. Not saved.\033[0m")
+                voice_process(voice_engine, f"Episode discarded")
+            elif key_input == 's':
+                dataset_path = os.path.join(datasets_dir, args.task_name, f"{str(current_episode).zfill(7)}")
+                # threading.Thread(target=save_data, args=(args, timesteps, actions, actions_eef, action_bases, dataset_path,)
+                #                 ).start()  # 执行指令单独的线程,，可以边说话边执行，多线程操作
+                threading.Thread(target=save_data_lmdb, args=(args, timesteps, actions, actions_eef, action_bases, dataset_path,)
+                                ).start()  # 执行指令单独的线程,，可以边说话边执行，多线程操作
+                voice_process(voice_engine, f"Episode {current_episode % 100} saved")
+                episode_num = episode_num + 1
+                current_episode = current_episode + 1
+        else:
             print("\033[31m[INFO] Episode discarded. Not saved.\033[0m")
             voice_process(voice_engine, f"Episode discarded")
-        elif key_input == 's':
-            dataset_path = os.path.join(datasets_dir, args.task_name, f"{str(current_episode).zfill(7)}")
-            # threading.Thread(target=save_data, args=(args, timesteps, actions, actions_eef, action_bases, dataset_path,)
-            #                 ).start()  # 执行指令单独的线程,，可以边说话边执行，多线程操作
-            threading.Thread(target=save_data_lmdb, args=(args, timesteps, actions, actions_eef, action_bases, dataset_path,)
-                            ).start()  # 执行指令单独的线程,，可以边说话边执行，多线程操作
-            voice_process(voice_engine, f"Episode {current_episode % 100} saved")
-            episode_num = episode_num + 1
-            current_episode = current_episode + 1
-            
 
 
 
@@ -523,6 +531,10 @@ def parse_arguments(known=False):
     parser.add_argument('--task_name', type=str)
     parser.add_argument('--episode_idx', type=int, default=0, help='episode index')
     parser.add_argument('--frame_rate', type=int, default=30, help='frame rate')
+    parser.add_argument('--max_timesteps', action='store', type=int, help='Max_timesteps.',
+                        default=10000, required=False)
+    parser.add_argument('--min_timesteps', action='store', type=int, help='Min_timesteps.',
+                        default=0, required=False)
 
     # 配置文件
     parser.add_argument('--config', type=str,

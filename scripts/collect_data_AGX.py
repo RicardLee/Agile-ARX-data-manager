@@ -347,7 +347,8 @@ class RosOperator:
         print("record not started, move arms to start")
         rate = rospy.Rate(self.args.frame_rate)
         print_flag = True
-
+        save_flag = True
+        
         while not rospy.is_shutdown():
             key = cv2.waitKey(1) & 0xFF
             if key == ord('q'):
@@ -424,11 +425,17 @@ class RosOperator:
             actions.append(action)
 
             print("Frame data: ", count)
+            
+            if self.args.min_timesteps < count < self.args.max_timesteps:
+                print(f"Recorded {count} frames. Reference frame: {self.args.min_timesteps} to {self.args.max_timesteps}.")
+                save_flag = False
+                break
+            
             rate.sleep()
 
         print("len(timesteps): ", len(timesteps))
         print("len(actions)  : ", len(actions))
-        return timesteps, actions, key_input
+        return timesteps, actions, key_input, save_flag
 
 
 def get_arguments():
@@ -443,7 +450,9 @@ def get_arguments():
                         default=0, required=False)
     
     parser.add_argument('--max_timesteps', action='store', type=int, help='Max_timesteps.',
-                        default=2000, required=False)
+                        default=10000, required=False)
+    parser.add_argument('--min_timesteps', action='store', type=int, help='Min_timesteps.',
+                        default=0, required=False)
 
     parser.add_argument('--camera_names', action='store', type=str, help='camera_names',
                         default=['cam_high', 'cam_left_wrist', 'cam_right_wrist'], required=False)
@@ -490,19 +499,22 @@ def main():
     ros_operator = RosOperator(args)
 
     while not rospy.is_shutdown():
-        timesteps, actions, key_input = ros_operator.process()
+        timesteps, actions, key_input, save_flag = ros_operator.process()
 
-        if key_input == 'q':
+        if save_flag == True:
+            if key_input == 'q':
+                print("\033[31m[INFO] Episode discarded. Not saved.\033[0m")
+            elif key_input == 's':
+                dataset_dir = os.path.join(args.dataset_dir, f"{args.task_name}_{args.user_id}")
+                os.makedirs(dataset_dir, exist_ok=True)
+                
+                dataset_path_lmdb = os.path.join(dataset_dir, f"{str(args.episode_idx).zfill(7)}")
+                save_data_lmdb(args, timesteps.copy(), actions.copy(), dataset_path_lmdb)
+
+                print(f"\033[32m[INFO] Episode {args.episode_idx} saved.\033[0m")
+                args.episode_idx += 1
+        else:
             print("\033[31m[INFO] Episode discarded. Not saved.\033[0m")
-        elif key_input == 's':
-            dataset_dir = os.path.join(args.dataset_dir, f"{args.task_name}_{args.user_id}")
-            os.makedirs(dataset_dir, exist_ok=True)
-            
-            dataset_path_lmdb = os.path.join(dataset_dir, f"{str(args.episode_idx).zfill(7)}")
-            save_data_lmdb(args, timesteps.copy(), actions.copy(), dataset_path_lmdb)
-
-            print(f"\033[32m[INFO] Episode {args.episode_idx} saved.\033[0m")
-            args.episode_idx += 1
 
         print("\n是否开始下一次采集？在窗口中按 y 继续，按 n 退出。")
         while True:
