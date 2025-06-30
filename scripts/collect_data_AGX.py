@@ -450,12 +450,11 @@ class RosOperator:
 
             print("Frame data: ", count)
             
-            if self.args.min_timesteps < count < self.args.max_timesteps:
-                print(f"Recorded {count} frames. Reference frame: {self.args.min_timesteps} to {self.args.max_timesteps}.")
-                save_flag = False
-                break
-            
             rate.sleep()
+
+        if count > self.args.max_timesteps or count < self.args.min_timesteps:
+            print(f"Recorded {count} frames. Reference frame: {self.args.min_timesteps} to {self.args.max_timesteps}.")
+            save_flag = False
 
         print("len(timesteps): ", len(timesteps))
         print("len(actions)  : ", len(actions))
@@ -483,7 +482,7 @@ def get_arguments():
                         default=10000, required=False)
     
     parser.add_argument('--min_timesteps', action='store', type=int, help='Min_timesteps.',
-                        default=0, required=False)
+                        default=50, required=False)
 
     parser.add_argument('--dataset_dir', action='store', type=str, help='Dataset_dir.',
                         default="./data", required=False)
@@ -540,7 +539,7 @@ def main():
                 print("\033[31m[INFO] Episode discarded. Not saved.\033[0m")
             elif key_input == 's':
                 date_str = datetime.now().strftime("%Y%m%d")
-                dataset_dir = os.path.join(args.dataset_dir, f"{args.task_name.replace(" ","_")}/set{args.task_id}_collector{args.user_id}_{date_str}")
+                dataset_dir = os.path.join(args.dataset_dir, f"{args.task_name.replace(' ', '_')}/set{args.task_id}_collector{args.user_id}_{date_str}")
                 os.makedirs(dataset_dir, exist_ok=True)
                 
                 dataset_path_lmdb = os.path.join(dataset_dir, f"{str(args.episode_idx).zfill(7)}")
