@@ -122,7 +122,7 @@ def save_data_lmdb(args, timesteps, actions, dataset_path, max_size=1 << 40):  #
     meta_info["camera_names"] = args.camera_names
     meta_info["keys"]["scalar_data"] = []
     meta_info["keys"]["images"] = {}
-    meta_info["language_instruction"] = args.language_instruction
+    meta_info["language_instruction"] = args.task_name
     meta_info['camera_height'] = args.camera_height
     meta_info["version"] = get_git_commit_id()
 
@@ -473,8 +473,8 @@ def get_arguments():
     parser.add_argument('--user_id', action='store', type=int, help='User ID.',
                         default=0, required=False)
     
-    parser.add_argument('--language_instruction', action='store', type=str, help='language_instruction.',
-                        default="task description", required=False)
+    # parser.add_argument('--language_instruction', action='store', type=str, help='language_instruction.',
+    #                     default="task description", required=False)
     
     parser.add_argument('--camera_height', action='store', type=str, help='camera_height.',
                         default="65.4", required=False)
