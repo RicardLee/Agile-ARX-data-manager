@@ -20,6 +20,17 @@ import cv2
 import lmdb
 import pickle
 import imageio
+from datetime import datetime
+import subprocess
+
+
+def get_git_commit_id():
+    try:
+        commit_id = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('utf-8').strip()
+        return commit_id
+    except Exception as e:
+        return "unknown"
+
 
 # 保存数据函数
 def save_data(args, timesteps, actions, dataset_path):
@@ -93,13 +104,26 @@ def save_data_lmdb(args, timesteps, actions, dataset_path, max_size=1 << 40):  #
     env = lmdb.open(log_path_lmdb, map_size=max_size)
     txn = env.begin(write=True)
 
+    step_id_list = list(range(len(actions)))
+
+    # 检查 action 和 qpos 每一维是否一大半为 0
+    action_arr = np.array(actions)
+    qpos_arr = np.array([timesteps[i].observation["qpos"] for i in step_id_list])
+
+    action_zero_ratio = np.mean(action_arr == 0, axis=0)
+    qpos_zero_ratio = np.mean(qpos_arr == 0, axis=0)
+    
+    if np.any(action_zero_ratio > 0.6) or np.any(qpos_zero_ratio > 0.6):
+        env.close()
+        raise ValueError("Aborted: Some dimensions in action have > 60% zeros")
+
     meta_info = {}
     meta_info["keys"] = {}
     meta_info["camera_names"] = args.camera_names
     meta_info["keys"]["scalar_data"] = []
     meta_info["keys"]["images"] = {}
-    meta_info["language_instruction"] = args.task_name
-    step_id_list = list(range(len(actions)))
+    meta_info["language_instruction"] = args.language_instruction
+    meta_info["version"] = get_git_commit_id()
 
     def put_scalar(name, values):
         meta_info["keys"]["scalar_data"].append(name.encode('utf-8'))
@@ -440,19 +464,29 @@ class RosOperator:
 
 def get_arguments():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset_dir', action='store', type=str, help='Dataset_dir.',
-                        default="./data", required=False)
     parser.add_argument('--task_name', action='store', type=str, help='Task name.',
                         default="aloha_mobile_dummy", required=False)
+    
+    parser.add_argument('--task_id', action='store', type=str, help='Task ID.',
+                        default="0-0", required=False)
+
     parser.add_argument('--user_id', action='store', type=int, help='User ID.',
                         default=0, required=False)
+    
+    parser.add_argument('--language_instruction', action='store', type=str, help='language_instruction.',
+                        default="task description", required=False)
+    
     parser.add_argument('--episode_idx', action='store', type=int, help='Episode index.',
                         default=0, required=False)
     
     parser.add_argument('--max_timesteps', action='store', type=int, help='Max_timesteps.',
                         default=10000, required=False)
+    
     parser.add_argument('--min_timesteps', action='store', type=int, help='Min_timesteps.',
                         default=0, required=False)
+
+    parser.add_argument('--dataset_dir', action='store', type=str, help='Dataset_dir.',
+                        default="./data", required=False)
 
     parser.add_argument('--camera_names', action='store', type=str, help='camera_names',
                         default=['cam_high', 'cam_left_wrist', 'cam_right_wrist'], required=False)
@@ -505,7 +539,8 @@ def main():
             if key_input == 'q':
                 print("\033[31m[INFO] Episode discarded. Not saved.\033[0m")
             elif key_input == 's':
-                dataset_dir = os.path.join(args.dataset_dir, f"{args.task_name}_{args.user_id}")
+                date_str = datetime.now().strftime("%Y%m%d")
+                dataset_dir = os.path.join(args.dataset_dir, f"{args.task_name.replace(" ","_")}/set{args.task_id}_collector{args.user_id}_{date_str}")
                 os.makedirs(dataset_dir, exist_ok=True)
                 
                 dataset_path_lmdb = os.path.join(dataset_dir, f"{str(args.episode_idx).zfill(7)}")
