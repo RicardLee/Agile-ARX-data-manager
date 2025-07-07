@@ -24,12 +24,21 @@ from datetime import datetime
 import subprocess
 
 
-def get_git_commit_id():
+def get_git_commit_id(repo_path):
     try:
-        commit_id = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('utf-8').strip()
+        result = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=repo_path,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=True
+        )
+        commit_id = result.stdout.strip()
         return commit_id
-    except Exception as e:
-        return "unknown"
+    except subprocess.CalledProcessError as e:
+        print(f"❌ 获取 commit id 失败: {e.stderr.strip()}")
+        return None
 
 
 # 保存数据函数
@@ -124,7 +133,7 @@ def save_data_lmdb(args, timesteps, actions, dataset_path, max_size=1 << 40):  #
     meta_info["keys"]["images"] = {}
     meta_info["language_instruction"] = args.task_name
     meta_info['camera_height'] = args.camera_height
-    meta_info["version"] = ""
+    meta_info["version"] = get_git_commit_id("/home/agilex/Desktop/Agile-ARX-data-manager")
 
     def put_scalar(name, values):
         meta_info["keys"]["scalar_data"].append(name.encode('utf-8'))
