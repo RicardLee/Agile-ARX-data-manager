@@ -42,19 +42,19 @@
         "buttons": {
           "main_action": {
             "width": 130.0,
-            "height": 60.0
+            "height": 30.0
           },
           "start_stop": {
             "width": 300.0,
-            "height": 100.0
+            "height": 70.0
           },
           "reset": {
             "width": 300.0,
-            "height": 100.0
+            "height": 70.0
           },
           "redo": {
             "width": 300.0,
-            "height": 100.0
+            "height": 70.0
           }
         }
       },

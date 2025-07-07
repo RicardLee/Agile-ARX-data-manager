@@ -21,6 +21,15 @@
       "placeholder": "Enter task name"
     },
     {
+      "name": "task_id",
+      "type": "string",
+      "default": "0-0",
+      "description": "Task ID",
+      "required": false,
+      "advanced": false,
+      "placeholder": "Enter task ID"
+    },
+    {
       "name": "episode_idx",
       "type": "integer",
       "default": 0,

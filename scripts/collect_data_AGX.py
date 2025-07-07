@@ -113,9 +113,9 @@ def save_data_lmdb(args, timesteps, actions, dataset_path, max_size=1 << 40):  #
     action_zero_ratio = np.mean(action_arr == 0, axis=0)
     qpos_zero_ratio = np.mean(qpos_arr == 0, axis=0)
     
-    if np.any(action_zero_ratio > 0.6) or np.any(qpos_zero_ratio > 0.6):
-        env.close()
-        raise ValueError("Aborted: Some dimensions in action have > 60% zeros")
+    # if np.any(action_zero_ratio > 0.9) or np.any(qpos_zero_ratio > 0.9):
+    #     env.close()
+    #     raise ValueError("Aborted: Some dimensions in action have > 60% zeros")
 
     meta_info = {}
     meta_info["keys"] = {}
@@ -124,7 +124,7 @@ def save_data_lmdb(args, timesteps, actions, dataset_path, max_size=1 << 40):  #
     meta_info["keys"]["images"] = {}
     meta_info["language_instruction"] = args.task_name
     meta_info['camera_height'] = args.camera_height
-    meta_info["version"] = get_git_commit_id()
+    meta_info["version"] = ""
 
     def put_scalar(name, values):
         meta_info["keys"]["scalar_data"].append(name.encode('utf-8'))
@@ -453,9 +453,9 @@ class RosOperator:
             
             rate.sleep()
 
-        if count > self.args.max_timesteps or count < self.args.min_timesteps:
-            print(f"Recorded {count} frames. Reference frame: {self.args.min_timesteps} to {self.args.max_timesteps}.")
-            save_flag = False
+        # if count > self.args.max_timesteps or count < self.args.min_timesteps:
+        #     print(f"Recorded {count} frames. Reference frame: {self.args.min_timesteps} to {self.args.max_timesteps}.")
+        #     save_flag = False
 
         print("len(timesteps): ", len(timesteps))
         print("len(actions)  : ", len(actions))
