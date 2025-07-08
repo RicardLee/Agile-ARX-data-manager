@@ -30,10 +30,15 @@ done
 
 NEW_FILES_COUNT=${#NEW_FILES[@]}
 
-# 创建 JSON 目录
+
+
+CONFIG_PATH="/home/agilex/Desktop/device.config"
+DEVICE_ID=$(grep "^device_id:" "$CONFIG_PATH" | awk -F: '{print $2}' | tr -d '[:space:]')
+
+# 创建 JSON 路径
 JSON_FILE_DIR="$(dirname "$SOURCE_DIR")/upload_stats"
 mkdir -p "$JSON_FILE_DIR"
-JSON_FILE_PATH="$JSON_FILE_DIR/upload_stats_$(date +%Y%m%d)_3.json"
+JSON_FILE_PATH="$JSON_FILE_DIR/upload_stats_$(date +%Y%m%d)_${DEVICE_ID}.json"
 
 # 写 JSON 文件
 {
