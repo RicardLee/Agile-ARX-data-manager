@@ -35,7 +35,10 @@
         "Grasping a steak and bread, coordinate with the second robot to construct a beef sandwich", 
         "Grasping a lettuce and bread, coordinate with the second robot to construct a beef sandwich",
         "Grasping a lettuce and steak, coordinate with the second robot to construct a beef",
-        "Put the dish into the oven to heat it up"
+        "Put the dish into the oven to heat it up",
+        "Make a beef sandwich",
+        "Price Tag Recognition and Target Product Procurement"
+
       ]
     },
     {
