@@ -13,12 +13,30 @@
     },
     {
       "name": "task_name",
-      "type": "string",
-      "default": "aloha_mobile_dummy",
+      "type": "choice",
+      "default": "SELECT TASK NAME",
       "description": "Task name for the dataset",
       "required": false,
       "advanced": false,
-      "placeholder": "Enter task name"
+      "choices": [
+        "SELECT TASK NAME",
+        "Sort the garbage on the desktop into recyclable and non-recyclable",
+        "Place the dishes on the tabletop into the drain rack",
+        "Pour water into the cup to two-thirds of the water level",
+        "Stack the three building blocks in order",
+        "Place the cup on the cup holder",
+        "Pick up the marker and put it into the pen holder",
+        "Open the microwave door, place the tray inside, and then close the door",
+        "Clear the table, load the dishes onto the tray, and sort the trash",
+        "Stack multiple bowls in size-sequential order",
+        "Sweep the trash on the table into the dustpan",
+        "Take the bread and lettuce from the rotating tray",
+        "Take the bread and steak from the rotating tray",
+        "Grasping a steak and bread, coordinate with the second robot to construct a beef sandwich", 
+        "Grasping a lettuce and bread, coordinate with the second robot to construct a beef sandwich",
+        "Grasping a lettuce and steak, coordinate with the second robot to construct a beef",
+        "Put the dish into the oven to heat it up"
+      ]
     },
     {
       "name": "task_id",
