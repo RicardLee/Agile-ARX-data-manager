@@ -19,7 +19,8 @@ for folder in "$SOURCE_DIR"*/; do
     fi
 
     # 替换文件夹名中的逗号为下划线
-    safe_folder_name="${folder_name//,/__}"
+    #safe_folder_name=$(echo "$folder_name" | sed -E 's/,_*/__/g' | sed 's/[_\.]\+$//')
+    safe_folder_name=$(echo "$folder_name" | sed -E 's/,_*/__/g; s/_+$//')
 
     # 查找该目录下今天新增的文件
     while IFS= read -r -d $'\0' file; do
@@ -73,8 +74,7 @@ for folder in "$SOURCE_DIR"*/; do
     fi
 
     # 替换并清洗目录名
-    safe_folder_name="${folder_name//,/__}"
-    safe_folder_name=$(echo "$safe_folder_name" | sed 's/[_\.]\+$//')
+    safe_folder_name=$(echo "$folder_name" | sed -E 's/,_*/__/g; s/_+$//')
 
     echo "正在上传: $folder_name -> $TARGET_DIR/$safe_folder_name"
     rclone copy "$folder" "$TARGET_DIR/$safe_folder_name" -v --bind $IP_ADDRESS
