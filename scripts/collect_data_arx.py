@@ -272,7 +272,6 @@ def parse_arguments(known=False):
                         choices=['head', 'left_wrist', 'right_wrist'],
                         default=['head', 'left_wrist', 'right_wrist'], help='camera names')
     parser.add_argument('--use_depth_image', action='store_true', help='use depth image')
-    parser.add_argument('--is_compress', action='store_true', help='compress image')
 
     # 机器人选项
     parser.add_argument('--use_base', action='store_true', help='use robot base')
