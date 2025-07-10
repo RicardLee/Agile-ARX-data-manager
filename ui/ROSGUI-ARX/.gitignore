@@ -1,0 +1,23 @@
+third_party/agx_src/
+third_party/arx_src/
+build/
+build_enhanced/
+docs/_build/
+*.env.backup.*
+
+# Logs and temporary files
+logs/
+*.log
+*.tmp
+*.o
+*.so
+*.a
+
+# Test executables (when built in root)
+test_*
+!test_*.cpp
+!test_*.py
+
+# Development tools output
+*.pyc
+__pycache__/

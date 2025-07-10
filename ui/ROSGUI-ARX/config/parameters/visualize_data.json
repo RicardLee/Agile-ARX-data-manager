@@ -1,0 +1,34 @@
+{
+  "script_name": "visualize_episodes.py",
+  "description": "Data visualization script for collected episodes",
+  "parameters": [
+    {
+      "name": "dataset_dir",
+      "type": "directory",
+      "default": "~/data",
+      "description": "Dataset directory path",
+      "required": true,
+      "advanced": false,
+      "placeholder": "Enter dataset directory path"
+    },
+    {
+      "name": "task_name",
+      "type": "string",
+      "default": "aloha_mobile_dummy",
+      "description": "Task name for the dataset",
+      "required": false,
+      "advanced": false,
+      "placeholder": "Enter task name"
+    },
+    {
+      "name": "episode_idx",
+      "type": "integer",
+      "default": 0,
+      "description": "Episode index to visualize",
+      "required": false,
+      "advanced": false,
+      "min": 0,
+      "max": 9999
+    }
+  ]
+} 

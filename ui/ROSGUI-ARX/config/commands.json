@@ -1,0 +1,86 @@
+{
+  "commands": [
+    {
+      "name": "相机：列出设备",
+      "command": "./scripts/camera_list_devices.sh",
+      "type": "daemon",
+      "category": "相机启动"
+    },
+    {
+      "name": "相机：多相机启动",
+      "command": "./scripts/camera_multi.sh",
+      "type": "daemon",
+      "category": "相机启动"
+    },
+    {
+      "name": "相机：图像查看器",
+      "command": "./scripts/camera_image_view.sh",
+      "type": "daemon",
+      "category": "相机启动"
+    },
+    {
+      "name": "ROS：启动核心",
+      "command": "./scripts/GUI_start.sh",
+      "type": "daemon",
+      "category": "数据采集"
+    },
+    {
+      "name": "数据：采集数据",
+      "command": "${PYTHON_EXECUTABLE} ${COBOT_MAGIC_PREFIX}/ARX_Play/mobile_aloha/collect_data_arx.py",
+      "type": "one_shot",
+      "category": "数据采集",
+      "parameter_config": "config/parameters/collect_data.json",
+      "description": "Collect demonstration data with configurable parameters"
+    },
+    {
+      "name": "数据：可视化",
+      "command": "${PYTHON_EXECUTABLE} ${COBOT_MAGIC_PREFIX}/cobot_magic/collect_data/visualize_episodes.py",
+      "type": "one_shot",
+      "category": "可视化数据集",
+      "parameter_config": "config/parameters/visualize_data.json",
+      "description": "Visualize collected episodes with plots and videos"
+    },
+    {
+      "name": "数据：重播数据",
+      "command": "${PYTHON_EXECUTABLE} ${COBOT_MAGIC_PREFIX}/cobot_magic/collect_data/replay_data.py",
+      "type": "one_shot",
+      "category": "重播数据集",
+      "parameter_config": "config/parameters/replay_data.json",
+      "description": "Replay collected data via ROS topics for verification"
+    },
+    {
+      "name": "模型：训练",
+      "command": "${PYTHON_EXECUTABLE} ${COBOT_MAGIC_PREFIX}/cobot_magic/aloha-devel/act/train.py",
+      "type": "one_shot",
+      "category": "模型训练",
+      "parameter_config": "config/parameters/train_model.json",
+      "description": "Train ACT model with comprehensive parameter control"
+    },
+    {
+      "name": "推理：执行",
+      "command": "${PYTHON_EXECUTABLE} ${COBOT_MAGIC_PREFIX}/cobot_magic/aloha-devel/act/inference.py",
+      "type": "daemon",
+      "category": "推理执行",
+      "parameter_config": "config/parameters/inference.json",
+      "description": "Execute trained model for real-time robot control"
+    },
+    {
+      "name": "升降柱：启动控制",
+      "command": "./scripts/lifter_start.sh",
+      "type": "daemon",
+      "category": "升降柱控制"
+    },
+    {
+      "name": "升降柱：初始化",
+      "command": "./scripts/lifter_init.sh",
+      "type": "one_shot",
+      "category": "升降柱控制"
+    },
+    {
+      "name": "升降柱：移动",
+      "command": "./scripts/lifter_move.sh",
+      "type": "one_shot",
+      "category": "升降柱控制"
+    }
+  ]
+}

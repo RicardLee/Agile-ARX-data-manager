@@ -78,7 +78,7 @@ def collect_information(args, ros_operator):
 
         # 获取动作和观察值
         action = deepcopy(obs_dict['qpos'])
-        action_eef = deepcopy(action_dict['eef'])
+        action_eef = deepcopy(obs_dict['eef'])
         action_base = obs_dict['robot_base']
 
 
@@ -213,6 +213,7 @@ def main(args):
             print("\033[31m[INFO] Episode discarded. Not saved.\033[0m")
         
         elif key_input == 's':
+            print(f"\033[32m[INFO] Episode {current_episode} saving.\033[0m")
             date_str = datetime.now().strftime("%Y%m%d")
             dataset_dir = os.path.join(args.dataset_dir, f"{args.task_name.replace(' ', '_')}/set{args.task_id}_collector{args.user_id}_{date_str}")
             os.makedirs(dataset_dir, exist_ok=True)
@@ -266,7 +267,7 @@ def parse_arguments(known=False):
     parser.add_argument('--config', type=str,
                         default=Path.joinpath(ROOT, 'data/config.yaml'),
                         help='config file')
-
+    parser.add_argument('--is_compress', action='store_true', help='compress image')
     # 图像处理选项
     parser.add_argument('--camera_names', nargs='+', type=str,
                         choices=['head', 'left_wrist', 'right_wrist'],

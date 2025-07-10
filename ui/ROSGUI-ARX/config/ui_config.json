@@ -1,0 +1,135 @@
+{
+  "ui_configuration": {
+    "version": "1.0",
+    "description": "UI configuration for ROSGUI application - controls global font size and window-specific button sizes",
+
+    "global": {
+      "default_font_size": 28.0
+    },
+    
+    "windows": {
+      "SystemWindow": {
+        "buttons": {
+          "control_button_size": {
+            "width": 120.0,
+            "height": 30.0
+          },
+          "button_size": {
+            "width": 120.0,
+            "height": 30.0
+          }
+        }
+      },
+      
+      "CameraWindow": {
+        "buttons": {
+          "main_action": {
+            "width": 140.0,
+            "height": 32.0
+          },
+          "start_stop": {
+            "width": 100.0,
+            "height": 28.0
+          },
+          "reset": {
+            "width": 120.0,
+            "height": 28.0
+          }
+        }
+      },
+      
+      "DataWindow": {
+        "buttons": {
+          "main_action": {
+            "width": 130.0,
+            "height": 60.0
+          },
+          "start_stop": {
+            "width": 300.0,
+            "height": 100.0
+          },
+          "reset": {
+            "width": 300.0,
+            "height": 100.0
+          },
+          "redo": {
+            "width": 300.0,
+            "height": 100.0
+          }
+        }
+      },
+      
+      "ModelWindow": {
+        "buttons": {
+          "main_action": {
+            "width": 150.0,
+            "height": 35.0
+          },
+          "start_stop": {
+            "width": 80.0,
+            "height": 30.0
+          },
+          "reset": {
+            "width": 140.0,
+            "height": 30.0
+          },
+          "info": {
+            "width": 120.0,
+            "height": 30.0
+          }
+        }
+      },
+      
+      "LifterWindow": {
+        "buttons": {
+          "main_action": {
+            "width": 150.0,
+            "height": 30.0
+          },
+          "start_stop": {
+            "width": 80.0,
+            "height": 30.0
+          },
+          "reset": {
+            "width": 140.0,
+            "height": 30.0
+          },
+          "position": {
+            "width": 80.0,
+            "height": 30.0
+          },
+          "execute": {
+            "width": 150.0,
+            "height": 35.0
+          }
+        }
+      },
+      
+      "VisualizationWindow": {
+        "buttons": {
+          "main_action": {
+            "width": 120.0,
+            "height": 30.0
+          },
+          "start_stop": {
+            "width": 80.0,
+            "height": 30.0
+          },
+          "reset": {
+            "width": 120.0,
+            "height": 30.0
+          }
+        }
+      }
+    },
+
+    "widgets": {
+      "CommandWidget": {
+        "button_size": {
+          "width": 80.0,
+          "height": 30.0
+        }
+      }
+    }
+  }
+}

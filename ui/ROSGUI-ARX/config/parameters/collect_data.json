@@ -1,0 +1,202 @@
+{
+  "script_name": "collect_data.py",
+  "description": "Data collection script with camera and robot integration",
+  "parameters": [
+    {
+      "name": "dataset_dir",
+      "type": "directory",
+      "default": "~/data",
+      "description": "Dataset directory path",
+      "required": true,
+      "advanced": false,
+      "placeholder": "Enter dataset directory path"
+    },
+    {
+      "name": "task_name",
+      "type": "choice",
+      "default": "SELECT TASK NAME",
+      "description": "Task name for the dataset",
+      "required": true,
+      "advanced": false,
+      "choices": [
+        "SELECT TASK NAME",
+        "This is a long sentence",
+        "This is another long sentence",
+        "Placeholder 123"
+      ]
+    },
+    {
+      "name": "task_id",
+      "type": "string",
+      "default": "0-0",
+      "description": "Task ID",
+      "required": true,
+      "advanced": false,
+      "placeholder": "Enter task ID"
+    },
+    {
+      "name": "episode_idx",
+      "type": "integer",
+      "default": 0,
+      "description": "Starting episode index",
+      "required": true,
+      "advanced": false,
+      "min": 0,
+      "max": 500
+    },
+    {
+      "name": "max_timesteps",
+      "type": "integer",
+      "default": 500,
+      "description": "Maximum timesteps per episode",
+      "required": false,
+      "advanced": false,
+      "min": 1,
+      "max": 2000
+    },
+    {
+      "name": "user_id",
+      "type": "integer",
+      "default": 0,
+      "description": "User ID for data collection",
+      "required": true,
+      "advanced": false,
+      "min": 0,
+      "max": 999
+    },
+    {
+      "name": "camera_names",
+      "type": "string",
+      "default": "cam_high,cam_left_wrist,cam_right_wrist",
+      "description": "Camera names (comma-separated)",
+      "required": false,
+      "advanced": true,
+      "placeholder": "cam1,cam2,cam3"
+    },
+    {
+      "name": "img_front_topic",
+      "type": "string",
+      "default": "/camera_f/color/image_raw",
+      "description": "Front camera image topic",
+      "required": false,
+      "advanced": true,
+      "placeholder": "/camera_topic"
+    },
+    {
+      "name": "img_left_topic",
+      "type": "string",
+      "default": "/camera_l/color/image_raw",
+      "description": "Left camera image topic",
+      "required": false,
+      "advanced": true,
+      "placeholder": "/camera_topic"
+    },
+    {
+      "name": "img_right_topic",
+      "type": "string",
+      "default": "/camera_r/color/image_raw",
+      "description": "Right camera image topic",
+      "required": false,
+      "advanced": true,
+      "placeholder": "/camera_topic"
+    },
+    {
+      "name": "img_front_depth_topic",
+      "type": "string",
+      "default": "/camera_f/depth/image_raw",
+      "description": "Front camera depth image topic",
+      "required": false,
+      "advanced": true,
+      "placeholder": "/camera_depth_topic"
+    },
+    {
+      "name": "img_left_depth_topic",
+      "type": "string",
+      "default": "/camera_l/depth/image_raw",
+      "description": "Left camera depth image topic",
+      "required": false,
+      "advanced": true,
+      "placeholder": "/camera_depth_topic"
+    },
+    {
+      "name": "img_right_depth_topic",
+      "type": "string",
+      "default": "/camera_r/depth/image_raw",
+      "description": "Right camera depth image topic",
+      "required": false,
+      "advanced": true,
+      "placeholder": "/camera_depth_topic"
+    },
+    {
+      "name": "master_arm_left_topic",
+      "type": "string",
+      "default": "/puppet/joint_left",
+      "description": "Master left arm joint topic",
+      "required": false,
+      "advanced": true,
+      "placeholder": "/joint_topic"
+    },
+    {
+      "name": "master_arm_right_topic",
+      "type": "string",
+      "default": "/puppet/joint_right",
+      "description": "Master right arm joint topic",
+      "required": false,
+      "advanced": true,
+      "placeholder": "/joint_topic"
+    },
+    {
+      "name": "puppet_arm_left_topic",
+      "type": "string",
+      "default": "/puppet/joint_left",
+      "description": "Puppet left arm joint topic",
+      "required": false,
+      "advanced": true,
+      "placeholder": "/joint_topic"
+    },
+    {
+      "name": "puppet_arm_right_topic",
+      "type": "string",
+      "default": "/puppet/joint_right",
+      "description": "Puppet right arm joint topic",
+      "required": false,
+      "advanced": true,
+      "placeholder": "/joint_topic"
+    },
+    {
+      "name": "robot_base_topic",
+      "type": "string",
+      "default": "/odom",
+      "description": "Robot base odometry topic",
+      "required": false,
+      "advanced": true,
+      "placeholder": "/odom"
+    },
+    {
+      "name": "use_robot_base",
+      "type": "flag",
+      "default": false,
+      "description": "Enable robot base control",
+      "required": false,
+      "advanced": true
+    },
+    {
+      "name": "use_depth_image",
+      "type": "flag",
+      "default": false,
+      "description": "Collect depth images",
+      "required": false,
+      "advanced": true
+    },
+    {
+      "name": "frame_rate",
+      "type": "integer",
+      "default": 30,
+      "description": "Camera frame rate (Hz)",
+      "required": false,
+      "advanced": true,
+      "min": 1,
+      "max": 60
+    }
+  ]
+}
