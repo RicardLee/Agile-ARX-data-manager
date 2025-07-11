@@ -1,6 +1,6 @@
 third_party/agx_src/
 third_party/arx_src/
-build/
+# build/
 build_enhanced/
 docs/_build/
 *.env.backup.*
