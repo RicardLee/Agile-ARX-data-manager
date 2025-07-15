@@ -21,3 +21,5 @@ test_*
 # Development tools output
 *.pyc
 __pycache__/
+
+ui/ROSGUI-AGX/config/parameters/collect_data.json
