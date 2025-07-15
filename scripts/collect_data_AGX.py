@@ -377,7 +377,7 @@ class RosOperator:
 
         prev_qpos = None
         count = 0
-        record_started = False
+        record_started = True
         print("record not started, move arms to start")
         rate = rospy.Rate(self.args.frame_rate)
         print_flag = True
@@ -553,8 +553,10 @@ def main():
             elif key_input == 's':
                 date_str = datetime.now().strftime("%Y%m%d")
                 dataset_dir = os.path.join(args.dataset_dir, f"{args.task_name.replace(' ', '_')}/set{args.task_id}_collector{args.user_id}_{date_str}")
+                dataset_dir = dataset_dir.replace(",", "_")  # 确保路径格式正确
+            
                 os.makedirs(dataset_dir, exist_ok=True)
-                
+    
                 dataset_path_lmdb = os.path.join(dataset_dir, f"{str(args.episode_idx).zfill(7)}")
                 save_data_lmdb(args, timesteps.copy(), actions.copy(), dataset_path_lmdb)
 

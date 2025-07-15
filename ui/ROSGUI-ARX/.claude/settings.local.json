@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(rg:*)",
+      "Bash(./build/bin/ROSGUIAGX:*)",
+      "Bash(timeout:*)"
+    ],
+    "deny": []
+  }
+}

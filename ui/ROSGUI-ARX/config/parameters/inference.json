@@ -1,0 +1,115 @@
+{
+  "script_name": "inference.py",
+  "description": "Model inference script for real-time robot control",
+  "parameters": [
+    {
+      "name": "ckpt_dir",
+      "type": "directory",
+      "default": "train",
+      "description": "Checkpoint directory containing trained model",
+      "required": true,
+      "advanced": false,
+      "placeholder": "Path to checkpoint directory"
+    },
+    {
+      "name": "max_publish_step",
+      "type": "integer",
+      "default": 10000,
+      "description": "Maximum number of inference steps",
+      "required": false,
+      "advanced": false,
+      "min": 1,
+      "max": 100000
+    },
+    {
+      "name": "publish_rate",
+      "type": "integer",
+      "default": 40,
+      "description": "Action publishing rate (Hz)",
+      "required": false,
+      "advanced": false,
+      "min": 1,
+      "max": 100
+    },
+    {
+      "name": "policy_class",
+      "type": "choice",
+      "default": "ACT",
+      "description": "Policy class (must match training)",
+      "required": false,
+      "advanced": true,
+      "choices": ["ACT", "CNNMLP", "Diffusion"]
+    },
+    {
+      "name": "batch_size",
+      "type": "integer",
+      "default": 8,
+      "description": "Inference batch size",
+      "required": false,
+      "advanced": true,
+      "min": 1,
+      "max": 64
+    },
+    {
+      "name": "chunk_size",
+      "type": "integer",
+      "default": 32,
+      "description": "Action chunk size (must match training)",
+      "required": false,
+      "advanced": true,
+      "min": 1,
+      "max": 100
+    },
+    {
+      "name": "use_robot_base",
+      "type": "flag",
+      "default": false,
+      "description": "Enable robot base control",
+      "required": false,
+      "advanced": true
+    },
+    {
+      "name": "use_depth_image",
+      "type": "flag",
+      "default": false,
+      "description": "Use depth images for inference",
+      "required": false,
+      "advanced": true
+    },
+    {
+      "name": "use_actions_interpolation",
+      "type": "flag",
+      "default": false,
+      "description": "Enable action interpolation",
+      "required": false,
+      "advanced": true
+    },
+    {
+      "name": "temporal_agg",
+      "type": "flag",
+      "default": true,
+      "description": "Enable temporal action aggregation",
+      "required": false,
+      "advanced": true
+    },
+    {
+      "name": "camera_names",
+      "type": "string",
+      "default": "cam_high,cam_left_wrist,cam_right_wrist",
+      "description": "Camera names (must match training)",
+      "required": false,
+      "advanced": true,
+      "placeholder": "cam1,cam2,cam3"
+    },
+    {
+      "name": "safety_timeout",
+      "type": "integer",
+      "default": 5,
+      "description": "Safety timeout in seconds",
+      "required": false,
+      "advanced": true,
+      "min": 1,
+      "max": 60
+    }
+  ]
+}
