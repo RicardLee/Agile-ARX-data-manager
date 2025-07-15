@@ -216,6 +216,7 @@ def main(args):
             print(f"\033[32m[INFO] Episode {current_episode} saving.\033[0m")
             date_str = datetime.now().strftime("%Y%m%d")
             dataset_dir = os.path.join(args.dataset_dir, f"{args.task_name.replace(' ', '_')}/set{args.task_id}_collector{args.user_id}_{date_str}")
+            dataset_dir = dataset_dir.replace(",", "_")  # 确保路径格式正确
             os.makedirs(dataset_dir, exist_ok=True)
             
             dataset_path_lmdb = os.path.join(dataset_dir, f"{str(current_episode).zfill(7)}")
