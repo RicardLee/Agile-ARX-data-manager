@@ -19,7 +19,6 @@ import argparse
 import rospy
 import cv2
 import yaml
-import threading
 import pyttsx3
 from datetime import datetime
 import numpy as np
@@ -136,7 +135,8 @@ def collect_information(args, ros_operator):
 
     print(f"\nlen(timesteps): {len(timesteps)}")
     print(f"len(actions)  : {len(actions)}")
-
+    
+    # cv2.destroyAllWindows()
     return timesteps, actions, actions_eef, action_bases, key_input
 
 
@@ -213,20 +213,21 @@ def main(args):
             print("\033[31m[INFO] Episode discarded. Not saved.\033[0m")
         
         elif key_input == 's':
-            print(f"\033[32m[INFO] Episode {current_episode} saving.\033[0m")
+            print(f"\033[33m[INFO] Episode {current_episode} saving...\033[0m")
             date_str = datetime.now().strftime("%Y%m%d")
             dataset_dir = os.path.join(args.dataset_dir, f"{args.task_name.replace(' ', '_')}/set{args.task_id}_collector{args.user_id}_{date_str}")
             os.makedirs(dataset_dir, exist_ok=True)
             
             dataset_path_lmdb = os.path.join(dataset_dir, f"{str(current_episode).zfill(7)}")
             
-            # threading.Thread(target=save_data, args=(args, timesteps, actions, actions_eef, action_bases, dataset_path,)
-            #                 ).start()  # 执行指令单独的线程,，可以边说话边执行，多线程操作
-            
-            threading.Thread(target=save_data_lmdb, args=(args, timesteps, actions, actions_eef, action_bases, dataset_path_lmdb)
-                            ).start()  # 执行指令单独的线程,，可以边说话边执行，多线程操作
-            print(f"\033[32m[INFO] Episode {current_episode} saved.\033[0m")
-            current_episode = current_episode + 1
+            # 同步保存数据，确保完成后再继续
+            try:
+                save_data_lmdb(args, timesteps, actions, actions_eef, action_bases, dataset_path_lmdb)
+                print(f"\033[32m[INFO] Episode {current_episode} saved successfully.\033[0m")
+                current_episode = current_episode + 1
+            except Exception as e:
+                print(f"\033[31m[ERROR] Failed to save episode {current_episode}: {e}\033[0m")
+                print("\033[31m[INFO] Episode discarded due to save error.\033[0m")
         
         print("\n是否开始下一次采集？在窗口中按 y 继续，按 n 退出。")
         while True:
@@ -235,6 +236,7 @@ def main(args):
                 break
             elif key == ord('n'):
                 print("采集终止。")
+                cv2.destroyAllWindows()
                 return
 
 
