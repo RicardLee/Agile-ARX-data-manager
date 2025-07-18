@@ -8,12 +8,15 @@ import dm_env
 
 import collections
 from collections import deque
+import threading
+import queue
 
 import rospy
 from sensor_msgs.msg import JointState
 from sensor_msgs.msg import Image
 from nav_msgs.msg import Odometry
 from cv_bridge import CvBridge
+from std_srvs.srv import Trigger
 import sys
 import select
 import cv2
@@ -22,6 +25,110 @@ import pickle
 import imageio
 from datetime import datetime
 import subprocess
+
+from pynput import keyboard
+
+
+class KeyboardHandler:
+    """Thread-safe keyboard handler using pynput for robust key detection."""
+
+    def __init__(self):
+        self.key_queue = queue.Queue()
+        self.listener = None
+        self.running = False
+
+    def on_press(self, key):
+        """Callback for key press events."""
+        try:
+            # Handle alphanumeric keys
+            if hasattr(key, 'char') and key.char:
+                self.key_queue.put(key.char.lower())
+        except AttributeError:
+            # Handle special keys if needed
+            pass
+
+    def start_listener(self):
+        """Start the keyboard listener in a separate thread."""
+        if not self.running:
+            self.listener = keyboard.Listener(on_press=self.on_press)
+            self.listener.start()
+            self.running = True
+
+    def stop_listener(self):
+        """Stop the keyboard listener."""
+        if self.running and self.listener:
+            self.listener.stop()
+            self.running = False
+
+    def get_key_non_blocking(self):
+        """Get a key press without blocking. Returns None if no key pressed."""
+        try:
+            return self.key_queue.get_nowait()
+        except queue.Empty:
+            return None
+
+    def get_key_blocking(self):
+        """Get a key press with blocking. Waits until a key is pressed."""
+        return self.key_queue.get()
+
+    def clear_queue(self):
+        """Clear any pending key presses."""
+        while not self.key_queue.empty():
+            try:
+                self.key_queue.get_nowait()
+            except queue.Empty:
+                break
+
+
+def call_ros_service_sequence():
+    """
+    Execute the ROS service call sequence:
+    1. Call go_zero_master services
+    2. Wait 3 seconds
+    3. Call restore_ms_mode services
+    """
+    try:
+        print("🔧 Executing ROS service sequence...")
+
+        # Step 1: Call go_zero_master services
+        print("📞 Calling go_zero_master services...")
+        rospy.wait_for_service('/can_left/go_zero_master', timeout=5.0)
+        rospy.wait_for_service('/can_right/go_zero_master', timeout=5.0)
+
+        go_zero_left = rospy.ServiceProxy('/can_left/go_zero_master', Trigger)
+        go_zero_right = rospy.ServiceProxy('/can_right/go_zero_master', Trigger)
+
+        response_left = go_zero_left()
+        response_right = go_zero_right()
+        print(f"   Left response: {response_left.message if response_left.success else 'Failed'}")
+        print(f"   Right response: {response_right.message if response_right.success else 'Failed'}")
+        print("✅ go_zero_master services called successfully")
+
+        # Step 2: Wait 3 seconds
+        print("⏳ Waiting 3 seconds...")
+        time.sleep(3.0)
+
+        # Step 3: Call restore_ms_mode services
+        print("📞 Calling restore_ms_mode services...")
+        rospy.wait_for_service('/can_left/restore_ms_mode', timeout=5.0)
+        rospy.wait_for_service('/can_right/restore_ms_mode', timeout=5.0)
+
+        restore_left = rospy.ServiceProxy('/can_left/restore_ms_mode', Trigger)
+        restore_right = rospy.ServiceProxy('/can_right/restore_ms_mode', Trigger)
+
+        response_left = restore_left()
+        response_right = restore_right()
+        print(f"   Left response: {response_left.message if response_left.success else 'Failed'}")
+        print(f"   Right response: {response_right.message if response_right.success else 'Failed'}")
+        print("✅ restore_ms_mode services called successfully")
+        print("🎉 ROS service sequence completed!")
+
+    except rospy.ServiceException as e:
+        print(f"❌ ROS service call failed: {e}")
+    except rospy.ROSException as e:
+        print(f"❌ ROS error: {e}")
+    except Exception as e:
+        print(f"❌ Unexpected error during service calls: {e}")
 
 
 def get_git_commit_id(repo_path):
@@ -190,6 +297,7 @@ class RosOperator:
         self.img_left_depth_deque = None
         self.bridge = None
         self.args = args
+        self.keyboard_handler = KeyboardHandler()
         self.init()
         self.init_ros()
 
@@ -382,14 +490,20 @@ class RosOperator:
         rate = rospy.Rate(self.args.frame_rate)
         print_flag = True
         save_flag = True
-        
+
+        # Start keyboard listener
+        self.keyboard_handler.start_listener()
+
         while not rospy.is_shutdown():
-            key = cv2.waitKey(1) & 0xFF
-            if key == ord('q'):
+            # Check for key presses using pynput (non-blocking)
+            key = self.keyboard_handler.get_key_non_blocking()
+            if key == 'q':
                 key_input = 'q'
                 break
-            elif key == ord('s'):
-                key_input = 's'
+            elif key == 's' or key == 'j':
+                # Execute ROS service sequence for both 's' and 'j' keys
+                call_ros_service_sequence()
+                key_input = 's'  # Treat both as save
                 break
 
             result = self.get_frame()
@@ -465,6 +579,9 @@ class RosOperator:
         # if count > self.args.max_timesteps or count < self.args.min_timesteps:
         #     print(f"Recorded {count} frames. Reference frame: {self.args.min_timesteps} to {self.args.max_timesteps}.")
         #     save_flag = False
+
+        # Stop keyboard listener
+        self.keyboard_handler.stop_listener()
 
         print("len(timesteps): ", len(timesteps))
         print("len(actions)  : ", len(actions))
@@ -544,6 +661,9 @@ def main():
     args = get_arguments()
     ros_operator = RosOperator(args)
 
+    # Create a separate keyboard handler for the main loop
+    main_keyboard_handler = KeyboardHandler()
+
     while not rospy.is_shutdown():
         timesteps, actions, key_input, save_flag = ros_operator.process()
 
@@ -554,9 +674,9 @@ def main():
                 date_str = datetime.now().strftime("%Y%m%d")
                 dataset_dir = os.path.join(args.dataset_dir, f"{args.task_name.replace(' ', '_')}/set{args.task_id}_collector{args.user_id}_{date_str}")
                 dataset_dir = dataset_dir.replace(",", "_")  # 确保路径格式正确
-            
+
                 os.makedirs(dataset_dir, exist_ok=True)
-    
+
                 dataset_path_lmdb = os.path.join(dataset_dir, f"{str(args.episode_idx).zfill(7)}")
                 save_data_lmdb(args, timesteps.copy(), actions.copy(), dataset_path_lmdb)
 
@@ -566,13 +686,22 @@ def main():
             print("\033[31m[INFO] Episode discarded. Not saved.\033[0m")
 
         print("\n是否开始下一次采集？在窗口中按 y 继续，按 n 退出。")
+
+        # Start keyboard listener for user input
+        main_keyboard_handler.clear_queue()  # Clear any previous key presses
+        main_keyboard_handler.start_listener()
+
         while True:
-            key = cv2.waitKey(0) & 0xFF
-            if key == ord('y'):
+            # Use pynput for blocking key input (blocking behavior)
+            key = main_keyboard_handler.get_key_blocking()
+            if key == 'y':
                 break
-            elif key == ord('n'):
+            elif key == 'n':
                 print("采集终止。")
+                main_keyboard_handler.stop_listener()
                 return
+
+        main_keyboard_handler.stop_listener()
 
 
 if __name__ == '__main__':
