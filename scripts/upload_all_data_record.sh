@@ -4,7 +4,7 @@ START_TIME=$(date +%s)
 echo ">>> 脚本开始运行: $(date '+%F %T')"
 
 SOURCE_DIR="/home/agilex/data/"
-TARGET_DIR="ceph-manipS1:manip_S1/myData-A1/real/raw_data/agilex_slipt_aloha"
+TARGET_DIR="ceph-manipS1:manip_S1/myData-A1/real/raw_data/agilex_split_aloha"
 
 TODAY=$(date +%Y-%m-%d)
 NEW_FILES=()
