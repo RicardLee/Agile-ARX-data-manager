@@ -7,7 +7,6 @@ SOURCE_DIR="/home/agilex/data/"
 TARGET_DIR="ceph-manipS1:manip_S1/myData-A1/real/raw_data/agilex_split_aloha"
 TARGET_DIR_upload="ceph-manipS1:manip_S1/myData-A1/real/raw_data"
 
-
 TODAY=$(date +%Y-%m-%d)
 NEW_FILES=()
 
