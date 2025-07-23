@@ -4,7 +4,9 @@ START_TIME=$(date +%s)
 echo ">>> 脚本开始运行: $(date '+%F %T')"
 
 SOURCE_DIR="/home/arx/data/"
-TARGET_DIR="ceph-manipS1:manip_S1/myData-A1/real/raw_data/agilex_slipt_aloha"
+TARGET_DIR="ceph-manipS1:manip_S1/myData-A1/real/raw_data/arx_lift2"
+TARGET_DIR_upload="ceph-manipS1:manip_S1/myData-A1/real/raw_data"
+
 
 TODAY=$(date +%Y-%m-%d)
 NEW_FILES=()
@@ -81,7 +83,7 @@ for folder in "$SOURCE_DIR"*/; do
 done
 
 # 上传 JSON 文件
-rclone copy -v "$JSON_FILE_PATH" "$TARGET_DIR/upload_stats/" --bind $IP_ADDRESS
+rclone copy -v "$JSON_FILE_PATH" "$TTARGET_DIR_upload/upload_stats/" --bind $IP_ADDRESS
 
 # 检查结果
 if [ $? -eq 0 ]; then
