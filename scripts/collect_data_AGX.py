@@ -27,6 +27,78 @@ from datetime import datetime
 import subprocess
 
 from pynput import keyboard
+import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')  # Use non-interactive backend
+
+
+def plot_actions(actions, save_path):
+    """
+    Plot action trajectories for dual-arm robot.
+
+    Args:
+        actions: List of 14-dimensional numpy arrays
+        save_path: Path to save the PNG image
+    """
+    if not actions:
+        print("No actions to plot!")
+        return
+
+    # Convert actions list to numpy array for easier manipulation
+    actions_array = np.array(actions)  # Shape: (num_timesteps, 14)
+    num_timesteps = actions_array.shape[0]
+
+    # Create time axis
+    time_steps = np.arange(num_timesteps)
+
+    # Create figure with 7 rows and 2 columns
+    fig, axes = plt.subplots(7, 2, figsize=(12, 14))
+    fig.suptitle('Action Trajectories - Dual Arm Robot', fontsize=16, fontweight='bold')
+
+    # Joint names for better labeling
+    joint_names = ['Joint 1', 'Joint 2', 'Joint 3', 'Joint 4', 'Joint 5', 'Joint 6', 'Joint 7']
+
+    # Plot left arm (first 7 dimensions) in the first column
+    for i in range(7):
+        axes[i, 0].plot(time_steps, actions_array[:, i], 'b-', linewidth=1.5, alpha=0.8)
+        axes[i, 0].set_title(f'Left Arm - {joint_names[i]}', fontsize=10, fontweight='bold')
+        axes[i, 0].grid(True, alpha=0.3)
+        axes[i, 0].set_ylabel('Position', fontsize=9)
+
+        # Set y-axis limits based on joint type
+        if i < 6:  # Joint 1-6
+            axes[i, 0].set_ylim([-1.5, 1.5])
+        else:  # Joint 7
+            axes[i, 0].set_ylim([-0.02, 0.1])
+
+        if i == 6:  # Last row
+            axes[i, 0].set_xlabel('Time Steps', fontsize=9)
+
+    # Plot right arm (last 7 dimensions) in the second column
+    for i in range(7):
+        axes[i, 1].plot(time_steps, actions_array[:, i + 7], 'r-', linewidth=1.5, alpha=0.8)
+        axes[i, 1].set_title(f'Right Arm - {joint_names[i]}', fontsize=10, fontweight='bold')
+        axes[i, 1].grid(True, alpha=0.3)
+        axes[i, 1].set_ylabel('Position', fontsize=9)
+
+        # Set y-axis limits based on joint type
+        if i < 6:  # Joint 1-6
+            axes[i, 1].set_ylim([-1.5, 1.5])
+        else:  # Joint 7
+            axes[i, 1].set_ylim([-0.02, 0.1])
+
+        if i == 6:  # Last row
+            axes[i, 1].set_xlabel('Time Steps', fontsize=9)
+
+    # Adjust layout to prevent overlapping
+    plt.tight_layout()
+    plt.subplots_adjust(top=0.95)
+
+    # Save the plot
+    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    plt.close()  # Close the figure to free memory
+
+    print(f"\033[32m[INFO] Action trajectories saved to: {save_path}\033[0m")
 
 
 class KeyboardHandler:
@@ -79,58 +151,55 @@ class KeyboardHandler:
             except queue.Empty:
                 break
 
-
 def call_ros_service_sequence():
     """
-    Execute the ROS service call sequence:
+    Execute the ROS service call sequence in a non-blocking way:
     1. Call go_zero_master services
-    2. Wait 3 seconds
+    2. Wait 3 seconds (non-blocking)
     3. Call restore_ms_mode services
     """
     try:
-        print("🔧 Executing ROS service sequence...")
+        print("🔧 Executing ROS service sequence in non-blocking mode...")
+
+        # Function to run a ROS service call in a subprocess
+        def run_service_call(service_name):
+            try:
+                cmd = f"rosservice call {service_name} '{{}}'"
+                process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                return process
+            except Exception as e:
+                print(f"❌ Failed to start subprocess for {service_name}: {e}")
+                return None
 
         # Step 1: Call go_zero_master services
-        print("📞 Calling go_zero_master services...")
-        rospy.wait_for_service('/can_left/go_zero_master', timeout=5.0)
-        rospy.wait_for_service('/can_right/go_zero_master', timeout=5.0)
+        print("📞 Starting go_zero_master services in subprocesses...")
+        processes = [
+            run_service_call('/can_left/go_zero_master'),
+            run_service_call('/can_right/go_zero_master')
+        ]
 
-        go_zero_left = rospy.ServiceProxy('/can_left/go_zero_master', Trigger)
-        go_zero_right = rospy.ServiceProxy('/can_right/go_zero_master', Trigger)
+        # Step 2: Schedule restore_ms_mode after 3 seconds (non-blocking)
+        def delayed_restore():
+            print("⏳ 3 seconds have passed, now calling restore_ms_mode...")
+            processes.extend([
+                run_service_call('/can_left/restore_ms_mode'),
+                run_service_call('/can_right/restore_ms_mode')
+            ])
+            print("✅ restore_ms_mode services called (non-blocking)")
 
-        response_left = go_zero_left()
-        response_right = go_zero_right()
-        print(f"   Left response: {response_left.message if response_left.success else 'Failed'}")
-        print(f"   Right response: {response_right.message if response_right.success else 'Failed'}")
-        print("✅ go_zero_master services called successfully")
+        # Start a timer to run `delayed_restore` after 3 seconds
+        timer = threading.Timer(3.0, delayed_restore)
+        timer.start()
 
-        # Step 2: Wait 3 seconds
-        print("⏳ Waiting 3 seconds...")
-        time.sleep(3.0)
+        print("🎉 ROS service sequence started in non-blocking mode!")
+        print("ℹ️ restore_ms_mode will be called after 3 seconds in the background.")
 
-        # Step 3: Call restore_ms_mode services
-        print("📞 Calling restore_ms_mode services...")
-        rospy.wait_for_service('/can_left/restore_ms_mode', timeout=5.0)
-        rospy.wait_for_service('/can_right/restore_ms_mode', timeout=5.0)
+        return processes, timer  # Return processes and timer for monitoring
 
-        restore_left = rospy.ServiceProxy('/can_left/restore_ms_mode', Trigger)
-        restore_right = rospy.ServiceProxy('/can_right/restore_ms_mode', Trigger)
-
-        response_left = restore_left()
-        response_right = restore_right()
-        print(f"   Left response: {response_left.message if response_left.success else 'Failed'}")
-        print(f"   Right response: {response_right.message if response_right.success else 'Failed'}")
-        print("✅ restore_ms_mode services called successfully")
-        print("🎉 ROS service sequence completed!")
-
-    except rospy.ServiceException as e:
-        print(f"❌ ROS service call failed: {e}")
-    except rospy.ROSException as e:
-        print(f"❌ ROS error: {e}")
     except Exception as e:
         print(f"❌ Unexpected error during service calls: {e}")
-
-
+        return None, None
+        
 def get_git_commit_id(repo_path):
     try:
         result = subprocess.run(
@@ -500,12 +569,15 @@ class RosOperator:
             if key == 'q':
                 key_input = 'q'
                 break
-            elif key == 's' or key == 'j':
-                # Execute ROS service sequence for both 's' and 'j' keys
+            elif key == 'j':
+                print("Now Call Go Zero")
                 call_ros_service_sequence()
+                continue
+            elif key == 's':
+                # Execute ROS service sequence for both 's' and 'j' keys
                 key_input = 's'  # Treat both as save
                 break
-
+            
             result = self.get_frame()
             if not result:
                 if print_flag:
@@ -678,7 +750,17 @@ def main():
                 os.makedirs(dataset_dir, exist_ok=True)
 
                 dataset_path_lmdb = os.path.join(dataset_dir, f"{str(args.episode_idx).zfill(7)}")
-                save_data_lmdb(args, timesteps.copy(), actions.copy(), dataset_path_lmdb)
+                print(f"Saving Data Now!")
+                threading.Thread(target=save_data_lmdb, args=(args, timesteps.copy(), actions.copy(), dataset_path_lmdb), daemon=True).start()
+                
+                # Plot actions trajectories regardless of save_flag
+                if actions:
+                    # Create plot filename
+                    plot_filename = f"actions_plot.png"
+                    plot_path = os.path.join(dataset_path_lmdb, plot_filename)
+
+                    # Plot and save actions trajectories
+                    plot_actions(actions, plot_path)
 
                 print(f"\033[32m[INFO] Episode {args.episode_idx} saved.\033[0m")
                 args.episode_idx += 1
