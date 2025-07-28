@@ -19,6 +19,10 @@ for folder in "$SOURCE_DIR"*/; do
         continue
     fi
 
+    if [[ "$folder_name" == SELECT* ]]; then
+        continue
+    fi
+
     # 替换文件夹名中的逗号为下划线
     #safe_folder_name=$(echo "$folder_name" | sed -E 's/,_*/__/g' | sed 's/[_\.]\+$//')
     safe_folder_name=$(echo "$folder_name" | sed -E 's/,_*/__/g; s/_+$//')
@@ -71,6 +75,10 @@ for folder in "$SOURCE_DIR"*/; do
     folder_name=$(basename "$folder")
 
     if [[ "$folder_name" == aloha* ]]; then
+        continue
+    fi
+
+    if [[ "$folder_name" == SELECT* ]]; then
         continue
     fi
 

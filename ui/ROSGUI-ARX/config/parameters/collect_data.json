@@ -19,7 +19,7 @@
       "required": true,
       "advanced": false,
       "choices": [
-        "SELECT TASK NAME",
+       "SELECT TASK NAME",
         "Sort the garbage on the desktop into recyclable and non-recyclable",
         "Place the dishes on the tabletop into the drain rack",
         "Pour water into the cup to two-thirds of the water level",
@@ -34,10 +34,13 @@
         "Take the bread and steak from the rotating tray",
         "Grasping a steak and bread, coordinate with the second robot to construct a beef sandwich", 
         "Grasping a lettuce and bread, coordinate with the second robot to construct a beef sandwich",
-        "Grasping a lettuce and steak, coordinate with the second robot to construct a beef",
+        "Grasping a lettuce and steak, coordinate with the second robot to construct a beef sandwich",
         "Put the dish into the oven to heat it up",
         "Make a beef sandwich",
-        "Price Tag Recognition and Target Product Procurement"
+        "Price Tag Recognition and Target Product Procurement",
+        "Put the bananas in the basket",
+        "Put the bowl in the dinner plate",
+        "Put the cylindrical medicine box into the box"
       ]
     },
     {
