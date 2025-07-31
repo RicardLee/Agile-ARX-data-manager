@@ -20,6 +20,10 @@ for folder in "$SOURCE_DIR"*/; do
         continue
     fi
 
+    if [[ "$folder_name" == SELECT* ]]; then
+        continue
+    fi
+
     # 替换文件夹名中的逗号为下划线
     #safe_folder_name=$(echo "$folder_name" | sed -E 's/,_*/__/g' | sed 's/[_\.]\+$//')
     safe_folder_name=$(echo "$folder_name" | sed -E 's/,_*/__/g; s/_+$//')
@@ -75,6 +79,10 @@ for folder in "$SOURCE_DIR"*/; do
         continue
     fi
 
+    if [[ "$folder_name" == SELECT* ]]; then
+        continue
+    fi
+
     # 替换并清洗目录名
     safe_folder_name=$(echo "$folder_name" | sed -E 's/,_*/__/g; s/_+$//')
 
@@ -83,7 +91,7 @@ for folder in "$SOURCE_DIR"*/; do
 done
 
 # 上传 JSON 文件
-rclone copy -v "$JSON_FILE_PATH" "$TTARGET_DIR_upload/upload_stats/" --bind $IP_ADDRESS
+rclone copy -v "$JSON_FILE_PATH" "$TARGET_DIR_upload/upload_stats/" --bind $IP_ADDRESS
 
 # 检查结果
 if [ $? -eq 0 ]; then
